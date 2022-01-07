@@ -409,7 +409,7 @@ static void usb_setup(void)
 #endif
 
 // TODO: this does not work... why?
-#if defined(SEREMU_INTERFACE) || defined(KEYBOARD_INTERFACE)
+#if defined(SEREMU_INTERFACE) || defined(KEYBOARD_INTERFACE) || defined(GAMEPAD_IMU_ADDON_INTERFACE) //not sure if i need to add the new usb def to this here, but just in case
 	  case 0x0921: // HID SET_REPORT
 		//serial_print(":)\n");
 		return;

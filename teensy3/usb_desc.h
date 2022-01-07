@@ -668,6 +668,38 @@ let me know?  http://forum.pjrc.com/forums/4-Suggestions-amp-Bug-Reports
   #define ENDPOINT3_CONFIG	ENDPOINT_TRANSMIT_ONLY
   #define ENDPOINT4_CONFIG	ENDPOINT_RECEIVE_ONLY
 
+/* 
+========================================================
+IMU Controller Add-on - USB definition.
+This is basically a bunch of definitions that set up the 
+USB definitions in all the other files. 
+Reference: https://blog.hamaluik.ca/posts/making-a-custom-teensy3-hid-joystick/ 
+========================================================
+*/
+#elif defined(USB_GAMEPAD_IMU_ADDON)
+    #define VENDOR_ID   0x16C0
+    #define PRODUCT_ID    0x0478
+    #define BCD_DEVICE 0x0008 //started at 0x0002 - recent change of mnfr name. bcd_device needs to be incremented whenever a change to the usb definition is made
+    #define MANUFACTURER_NAME {'R', 'e', 'd', 'S', 'a', 'n','d', 'R', 'o', 'b', 'o', 't'}
+    #define MANUFACTURER_NAME_LEN 12
+    #define PRODUCT_NAME    {'G', 'a', 'm', 'e', 'p', 'a', 'd', ' ', 'M', 'o', 't', 'i', 'o', 'n', ' ', 'S', 'e', 'n', 's', 'o', 'r', ' ','A','d','d','-','O','n'}
+    #define PRODUCT_NAME_LEN  28
+    #define EP0_SIZE              64 // maximum packet size that the device will transmit, in bytes
+    #define NUM_ENDPOINTS         1 // each place that receives information counts as an “endpoint”; "0" is reserved, 
+                                    // so there will be 2 endpoints: (the reserved one and the place the gamepad IMU add-on is sending data)
+    #define NUM_USB_BUFFERS       24 // number of packets to buffer. 30 is just the default for the USB_SERIAL_HID, so lets leave that alone for now.
+                                    // changed to 24 packets
+    #define NUM_INTERFACE         1 // defines how many virtual things this usb device will represent - in this case, just the gamepad add-on
+    #define GAMEPAD_IMU_ADDON_INTERFACE      0 // Since there is only one interface, the IMU Add-on is the first one (0)
+    #define GAMEPAD_IMU_ADDON_ENDPOINT       1 // IMU Add-on connects to the first available endpoint - 1 in this case since 0 is reserved
+    #define GAMEPAD_IMU_ADDON_SIZE           18 // 18 byte report, first byte is report ID, second byte is a buffer, 2 bytes per axis and 6 axes, 4 byte timestamp
+    #define GAMEPAD_IMU_ADDON_INTERVAL       2 // 1 is 1ms or 1000hz, 2 is 2ms or 500hz, 3 is 3ms or 333hz, 4 is 4ms or 250hz, etc
+    //#define IMU_AO_DESC_OFFSET  (9)
+    //#define CONFIG_DESC_SIZE  (9 + 9+9+7)
+    #define ENDPOINT1_CONFIG  ENDPOINT_TRANSMIT_ONLY
+
+// ===================================================
+
 #elif defined(USB_FLIGHTSIM_JOYSTICK)
   #define VENDOR_ID		0x16C0
   #define PRODUCT_ID		0x0488

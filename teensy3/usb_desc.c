@@ -350,6 +350,59 @@ static uint8_t joystick_report_desc[] = {
 #endif // JOYSTICK_SIZE
 #endif // JOYSTICK_INTERFACE
 
+/* 
+=============================================================================================
+IMU Controller Add-on - USB report descriptor.
+============================================================================================
+Created with the USB Descriptor Tool: http://www.usb.org/developers/hidpage#HID 
+This is the actual HID report descriptor. Defines the device as a gamepad device,
+with 6 logical axes coressponding to x,y,z linear and angular acceleration.
+Each field is a 16bit (2byte) signed integer, so with 6 fields in total we get
+a report size of 18 bytes total. (after also adding report ID, buffer, and timestamp)
+Reference these sites as well for more information:
+https://blog.hamaluik.ca/posts/making-a-custom-teensy3-hid-joystick/
+https://eleccelerator.com/tutorial-about-usb-hid-report-descriptors/ 
+http://www.picbasic.co.uk/forum/showthread.php?t=11950 - there is a linked PDF that is helpful
+==============================================================================================
+*/
+#ifdef GAMEPAD_IMU_ADDON_INTERFACE
+// Note: ISM330DHCX reports values for accel in mg/LSB and gyro is mdps/LSB
+static uint8_t gamepad_imu_addon_report_desc[] = {
+        0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
+        0x09, 0x05,                    // USAGE (Gamepad)
+        0xa1, 0x01,                    // COLLECTION (Application)
+        0x05, 0x01,                    //   USAGE PAGE (Generic Desktop)
+        0x09, 0x01,                    //   USAGE (Pointer)
+        0xa1, 0x00,                    //     COLLECTION (Physical)
+        0x85, 0x01,                    //       REPORT_ID (1)
+        0x75, 0x08,                    //       REPORT_SIZE (8)
+        0x95, 0x01,                    //       REPORT_COUNT (1)
+        0x81, 0x03,                    //       INPUT (Constant,Var,Abs)
+        0x16, 0x01, 0x80,              //       LOGICAL_MINIMUM (-32767)
+        0x26, 0xFF, 0x7F,              //       LOGICAL_MAXIMUM (32767)
+        0x75, 0x10,                    //       REPORT_SIZE (16) - 16 bit report size
+        0x95, 0x06,                    //       REPORT_COUNT (6)
+        0x09, 0x30,                    //       USAGE (X)
+        0x09, 0x31,                    //       USAGE (Y)
+        0x09, 0x32,                    //       USAGE (Z)
+        0x09, 0x33,                    //       USAGE (Rx)
+        0x09, 0x34,                    //       USAGE (Ry)
+        0x09, 0x35,                    //       USAGE (Rz)  
+        0x81, 0x02,                    //       INPUT (Data,Var,Abs) adds fields to input report 
+        0x15, 0x00,                    //       LOGICAL_MINIMUM (0)  
+        0x27, 0xFF, 0xFF, 0x00, 0x00,  //       LOGICAL_MAXIMUM (65535) 
+        0x75, 0x10,                    //       REPORT_SIZE (16) - 16 bit report size
+        0x95, 0x02,                    //       REPORT_COUNT (2) - timestamp is a 32 bit unsigned int
+        0x09, 0x46,                    //       USAGE VECTOR NON ORIENTED (timestamp)
+        0x09, 0x46,                    //       USAGE VECTOR NON ORIENTED (timestamp)
+        0x81, 0x02,                    //       INPUT (Data,Var,Abs) adds fields to input report
+        0xC0,                          //   END_COLLECTION
+        0xC0                           // END_COLLECTION
+};
+#endif // GAMEPAD_IMU_ADDON_INTERFACE
+
+// =======================================================
+
 #ifdef MULTITOUCH_INTERFACE
 // https://forum.pjrc.com/threads/32331-USB-HID-Touchscreen-support-needed
 // https://msdn.microsoft.com/en-us/library/windows/hardware/jj151563%28v=vs.85%29.aspx
@@ -561,7 +614,17 @@ static uint8_t flightsim_report_desc[] = {
 #define JOYSTICK_INTERFACE_DESC_SIZE	0
 #endif
 
-#define MTP_INTERFACE_DESC_POS		JOYSTICK_INTERFACE_DESC_POS+JOYSTICK_INTERFACE_DESC_SIZE
+//==========================================
+#define GAMEPAD_IMU_ADDON_INTERFACE_DESC_POS	JOYSTICK_INTERFACE_DESC_POS+JOYSTICK_INTERFACE_DESC_SIZE
+#ifdef  GAMEPAD_IMU_ADDON_INTERFACE
+#define GAMEPAD_IMU_ADDON_INTERFACE_DESC_SIZE	9+9+7
+#define GAMEPAD_IMU_ADDON_HID_DESC_OFFSET	        GAMEPAD_IMU_ADDON_INTERFACE_DESC_POS+9
+#else
+#define GAMEPAD_IMU_ADDON_INTERFACE_DESC_SIZE	0
+#endif
+//===========================================
+
+#define MTP_INTERFACE_DESC_POS		GAMEPAD_IMU_ADDON_INTERFACE_DESC_POS+GAMEPAD_IMU_ADDON_INTERFACE_DESC_SIZE//JOYSTICK_INTERFACE_DESC_POS+JOYSTICK_INTERFACE_DESC_SIZE
 #ifdef  MTP_INTERFACE
 #define MTP_INTERFACE_DESC_SIZE		9+7+7+7
 #else
@@ -1260,6 +1323,38 @@ static uint8_t config_descriptor[CONFIG_DESC_SIZE] = {
         JOYSTICK_INTERVAL,                      // bInterval
 #endif // JOYSTICK_INTERFACE
 
+/* ====================
+Another added section, to define the USB interface being used. 
+   ====================*/
+#ifdef GAMEPAD_IMU_ADDON_INTERFACE
+// interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
+        9,                                      // bLength
+        4,                                      // bDescriptorType
+        GAMEPAD_IMU_ADDON_INTERFACE,                     // bInterfaceNumber
+        0,                                      // bAlternateSetting
+        1,                                      // bNumEndpoints
+        0x03,                                   // bInterfaceClass (0x03 = HID)
+        0x00,                                   // bInterfaceSubClass
+        0x00,                                   // bInterfaceProtocol
+        0,                                      // iInterface
+        // HID interface descriptor, HID 1.11 spec, section 6.2.1
+        9,                                      // bLength
+        0x21,                                   // bDescriptorType
+        0x11, 0x01,                             // bcdHID
+        0,                                      // bCountryCode
+        1,                                      // bNumDescriptors
+        0x22,                                   // bDescriptorType
+        LSB(sizeof(gamepad_imu_addon_report_desc)),        // wDescriptorLength
+        MSB(sizeof(gamepad_imu_addon_report_desc)),
+        // endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
+        7,                                      // bLength
+        5,                                      // bDescriptorType
+        GAMEPAD_IMU_ADDON_ENDPOINT | 0x80,               // bEndpointAddress
+        0x03,                                   // bmAttributes (0x03=intr)
+        GAMEPAD_IMU_ADDON_SIZE, 0,                       // wMaxPacketSize
+        GAMEPAD_IMU_ADDON_INTERVAL,                      // bInterval
+#endif // GAMEPAD_IMU_ADDON_INTERFACE
+
 #ifdef MTP_INTERFACE
         // interface descriptor, USB spec 9.6.5, page 267-269, Table 9-12
         9,                                      // bLength
@@ -1864,6 +1959,14 @@ const usb_descriptor_list_t usb_descriptor_list[] = {
         {0x2200, JOYSTICK_INTERFACE, joystick_report_desc, sizeof(joystick_report_desc)},
         {0x2100, JOYSTICK_INTERFACE, config_descriptor+JOYSTICK_HID_DESC_OFFSET, 9},
 #endif
+
+//=================================================================================
+#ifdef GAMEPAD_IMU_ADDON_INTERFACE
+        {0x2200, GAMEPAD_IMU_ADDON_INTERFACE, gamepad_imu_addon_report_desc, sizeof(gamepad_imu_addon_report_desc)},
+        {0x2100, GAMEPAD_IMU_ADDON_INTERFACE, config_descriptor+GAMEPAD_IMU_ADDON_HID_DESC_OFFSET, 9},
+#endif
+//=================================================================================
+
 #ifdef RAWHID_INTERFACE
 	{0x2200, RAWHID_INTERFACE, rawhid_report_desc, sizeof(rawhid_report_desc)},
 	{0x2100, RAWHID_INTERFACE, config_descriptor+RAWHID_HID_DESC_OFFSET, 9},
