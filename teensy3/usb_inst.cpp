@@ -74,7 +74,7 @@ FlightSimClass FlightSim;
 //======================================
 
 #ifdef GAMEPAD_IMU_ADDON_INTERFACE
-usb_gamepad_imu_addon_class gamepadaddon;
+usb_gamepad_imu_addon_class GamepadAddon;
 uint8_t usb_gamepad_imu_addon_class::auto_send = 0;
 usb_serial_class Serial; //not sure if this is needed
 #endif

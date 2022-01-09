@@ -5,7 +5,7 @@
 #include "HardwareSerial.h"
 #include <string.h> // for memcpy()
 
-//#ifdef USB_GAMEPAD_IMU_AO // defined by usb_dev.h -> usb_desc.h
+//#ifdef USB_GAMEPAD_IMU_ADDON // defined by usb_dev.h -> usb_desc.h
 #ifdef GAMEPAD_IMU_ADDON_INTERFACE //defined by usb_dev.h -> usb_desc.h
 
 uint16_t usb_gamepad_imu_addon_data[9];

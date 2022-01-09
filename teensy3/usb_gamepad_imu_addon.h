@@ -1,7 +1,9 @@
-// usb_imu_addon.h
-// header file for IMU Add-On usb communication.
+// usb__gamepad_imu_addon.h
+// header file for motion sensor add on usb communication.
 #ifndef _USB_GAMEPAD_IMU_ADDON_H_
 #define _USB_GAMEPAD_IMU_ADDON_H_
+
+#include "usb_desc.h"
 
 #if defined(GAMEPAD_IMU_ADDON_INTERFACE)
 
@@ -128,7 +130,7 @@ public:
         usb_gamepad_imu_addon_send_buffer_check();
     }
 };
-extern usb_gamepad_imu_addon_class gamepadaddon;
+extern usb_gamepad_imu_addon_class GamepadAddon;
 
 #endif // __cplusplus
 #endif // GAMEPAD_IMU_ADDON_INTERFACE
