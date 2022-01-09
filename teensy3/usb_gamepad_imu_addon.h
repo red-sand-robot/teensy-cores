@@ -55,7 +55,7 @@ public:
         if(auto_send){
             usb_gamepad_imu_addon_data[0] = 1; // puts the Report ID in byte 0, and dummy data (constant) in byte 1 to align everything
             usb_gamepad_imu_addon_send();
-        }    
+        };    
     }
 
     void collectAccelXYZ(int16_t x, int16_t y, int16_t z) {
