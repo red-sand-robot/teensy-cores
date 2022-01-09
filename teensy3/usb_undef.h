@@ -260,6 +260,20 @@
 #ifdef RAWHID_RX_INTERVAL
 #undef RAWHID_RX_INTERVAL
 #endif
+// gamepad_imu_addon undefines
+#ifdef GAMEPAD_IMU_ADDON_INTERFACE
+#undef GAMEPAD_IMU_ADDON_INTERFACE
+#endif
+#ifdef GAMEPAD_IMU_ADDON_ENDPOINT
+#undef GAMEPAD_IMU_ADDON_ENDPOINT
+#endif
+#ifdef GAMEPAD_IMU_ADDON_SIZE
+#undef GAMEPAD_IMU_ADDON_SIZE
+#endif
+#ifdef GAMEPAD_IMU_ADDON_INTERVAL
+#undef GAMEPAD_IMU_ADDON_INTERVAL
+#endif
+// -------------------------
 #ifdef FLIGHTSIM_INTERFACE
 #undef FLIGHTSIM_TX_ENDPOINT
 #endif
