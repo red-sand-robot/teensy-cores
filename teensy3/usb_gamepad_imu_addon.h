@@ -34,8 +34,8 @@ public:
         if (ax > 32767) ax = 32767;
         if (ay < -32767) ay = -32767;
         if (ay > 32767) ay = 32767;
-        if (az < -32767) z = -32767;
-        if (az > 32767) z = 32767;
+        if (az < -32767) az = -32767;
+        if (az > 32767) az = 32767;
         if (gx < -32767) gx = -32767;
         if (gx > 32767) gx = 32767;
         if (gy < -32767) gy = -32767;
@@ -55,7 +55,7 @@ public:
         if(auto_send){
             usb_gamepad_imu_addon_data[0] = 1; // puts the Report ID in byte 0, and dummy data (constant) in byte 1 to align everything
             usb_gamepad_imu_addon_send();
-        }    
+        };    
     }
 
     void collectAccelXYZ(int16_t x, int16_t y, int16_t z) {
